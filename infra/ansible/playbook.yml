@@ -1,0 +1,30 @@
+---
+- name: Déployer Docker Compose sur la machine distante
+  hosts: all 
+  become: yes
+  tasks:
+    - name: Installer Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Installer Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Créer le répertoire pour le projet
+      file:
+        path: /opt/myapp
+        state: directory
+
+    - name: Copier le fichier docker-compose.yml
+      copy:
+        src: ../doccker-compose/docker-compose.yml
+        dest: /opt/myapp/docker-compose.yml
+
+    - name: Démarrer les services avec Docker Compose
+      command: docker-compose up -d
+      args:
+        chdir: /opt/myapp

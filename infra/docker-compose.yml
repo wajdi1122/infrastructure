@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Service pour la base de données PostgreSQL
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    env_file:
+          - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Service pour pgAdmin (interface web pour PostgreSQL)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    env_file:
+          - .env
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  # Service pour l'application backend
+  back-app:
+    image: wajdi1999/back-end-app:latest
+    container_name: back_end_app
+    env_file:
+          - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  # Service pour l'application frontend
+  front-app:
+    image: wajdi1999/frontend-app:latest
+    container_name: frontend-app
+    ports:
+      - "80:80"
+    depends_on:
+      - back-app
+
+# Volume pour persister les données de PostgreSQL
+volumes:
+  postgres_data:
